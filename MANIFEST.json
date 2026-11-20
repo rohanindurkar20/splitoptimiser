@@ -1,0 +1,17 @@
+{
+ "title": "Split Optimizer (built on Fynd) vs three DEX aggregators: live quotes on the same block",
+ "created": "2026-11-20 07:18:21 UTC",
+ "quoted": "2026-11-18, blocks 26441315..26441797",
+ "method": "Fynd = what a Fynd deployment returns, the best by net output of its three\nrouters at 4 hops (water-fill, path Frank-Wolfe, split router), committed router 37aedc3 (later commits\nleave routes unchanged); aggregators limited to the venue types Fynd covers (no RFQ / private market\nmakers), each aggregator's own fee added back where its quote deducted one. Gross = amount out\nbefore gas. Net = amount out less the route's gas at the block's base fee, priced in the output\ntoken. Comparisons whose gross difference is 1,000 bps or more either way are left out of the\naggregates, as are orders under $1,000 and orders the router found no route for; most are tokens\nthe router does not yet cover well, and every one is still in results.csv.",
+ "files": {
+  "results.csv": "e1b3261120e82d18b5062e8595a68e2acfb22cf4d3631fae6d893dc40eaa61ac",
+  "routes.jsonl.gz": "161f4943cdb3be32c8036128492555fc3944a3333ddff13336367f439f717613",
+  "blocks.json": "b22ff7d56554f8f59381e9fd3ad02a4a8e656b84f86af286eed01fdfd53cacaa",
+  "summary.json": "ee6945d1b9c0e93ee1b4e768a8f097354a803dc919523624978f9da7cb5045fe"
+ },
+ "raw_aggregator_responses": {
+  "Aggregator A": "8a50bf290fcc81a6a6ee1567ec1e08babab23f99b75dfa20ece71835fec105b3",
+  "Aggregator B": "66c538d3daef8a9997c0eff3814b21444708b262bb6d116ee9a7e5c5eec25ec8",
+  "Aggregator C": "94c43b6b2671bc735fe511f77c9fb78b6b41ddd149d561d74113a0ddd525e111"
+ }
+}

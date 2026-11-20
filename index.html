@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}</style>
+<title>Split Optimizer Benchmark</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column for the claim and method, widening to a full-width ledger for the orders. */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --fg: #151a22; --muted: #5b6474; --line: #dde1e8;
+  --accent: #2c55c9; --accent-soft: #e6ecfb; --good: #1d7f55; --bad: #b53b33; --code: #eef0f4;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1218; --surface: #161b23; --fg: #e6e9ef; --muted: #98a1b2; --line: #2a313d;
+  --accent: #8fa9ff; --accent-soft: #1d2640; --good: #5cc795; --bad: #f08a80; --code: #1c222c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1218; --surface: #161b23; --fg: #e6e9ef; --muted: #98a1b2; --line: #2a313d;
+  --accent: #8fa9ff; --accent-soft: #1d2640; --good: #5cc795; --bad: #f08a80; --code: #1c222c; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 72ch; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(28px, 4.2vw, 40px); letter-spacing: -0.01em; }
+h2 { font-size: 22px; margin-top: 48px; }
+h3 { font-size: 16px; }
+p { margin: 0; }
+.stack { display: grid; gap: 14px; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 17px; color: var(--fg); }
+.muted { color: var(--muted); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, .mono { font-family: var(--mono); font-size: 13px; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.num { font-variant-numeric: tabular-nums; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 4px; }
+.facts div { display: grid; }
+.facts b { font: 600 22px/1.2 var(--display); font-variant-numeric: tabular-nums; }
+.facts span { font-size: 13px; color: var(--muted); }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 10px; }
+.tabs button, .seg button { font: 500 13px var(--body); border: 1px solid var(--line); background: var(--surface); color: var(--fg);
+  padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th { font: 500 12px var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface); }
+td:first-child, th:first-child { text-align: left; }
+tr:last-child td { border-bottom: 0; }
+tr.total td { font-weight: 600; }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+.note { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.steps { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; }
+.steps li::before { counter-increment: s; content: counter(s); font: 600 13px/26px var(--mono); text-align: center;
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+.hash { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.hash .mono { overflow-wrap: anywhere; }
+.hash button, .copy { font: 500 12px var(--body); border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0; }
+.controls input, .controls select { font: 14px var(--body); padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--fg); min-width: 0; }
+.controls input { flex: 1 1 200px; }
+#orders tbody tr { cursor: pointer; }
+#orders tbody tr:hover td { background: var(--accent-soft); }
+#orders tbody tr.open td { background: var(--accent-soft); }
+.detail td { white-space: normal; text-align: left; background: var(--bg) !important; cursor: default; }
+.detail .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; padding: 6px 0; }
+.detail .grid > div { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 12px; font-size: 13px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; overflow-wrap: anywhere; }
+.legs { font: 12px/1.7 var(--mono); margin: 0; padding-left: 18px; }
+.legs li { overflow-wrap: anywhere; }
+.pager { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 10px; font-size: 13px; }
+.pager button { font: 500 13px var(--body); border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+.pager button:disabled { opacity: 0.4; cursor: default; }
+.contact { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.contact div { display: grid; }
+.contact span { font-size: 12px; color: var(--muted); }
+.contact b { font: 500 14px var(--mono); user-select: all; }
+footer { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 18px; font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+
+<script>
+// Set per published page by build_pages.py.
+const CONFIG = {"order": ["A", "B", "C"], "manifestHash": "7bbd402d13bdb43a30b478ca0a97a5f59a9598aa633689f8c31593e245f08f2c", "repo": "", "scope": {"A": "", "B": "", "C": "Aggregator C was quoted only on orders of 100 ETH or more."}, "focus": "B", "names": {}, "lede": "3,429 real-size orders quoted against three DEX aggregators, each with more than $100 billion in all-time volume on DefiLlama (as of 20 Nov 2026), on the same block and the same on-chain liquidity. Split Optimizer returned more output on the large majority of orders, and the gap grows with size.", "ridStep": "Each aggregator's raw responses, with their request ids, are held back from this public page so the aggregators stay unnamed. Each aggregator can receive its own file and check every quote against its logs; the file's SHA-256 is in the manifest."};
+</script>
+
+<div class="wrap">
+  <header class="stack col">
+    <span class="eyebrow">Benchmark · Ethereum mainnet · quoted 18 Nov 2026</span>
+    <h1>Split Optimizer vs three major DEX aggregators</h1>
+    <p class="lede" id="lede"></p>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <section>
+    <h2>Results</h2>
+    <p class="note col">Difference in output, in basis points of the aggregator's output; positive means Split Optimizer gives the user more.
+      Size-weighted averages weight each order by its USD size. “Ahead” and “behind” count orders more than 0.05 bps apart.</p>
+    <div class="tabs" role="group" aria-label="Aggregator" id="aggTabs"></div>
+    <div class="tabs seg" role="group" aria-label="Gas" id="gasTabs">
+      <button type="button" data-kind="net" aria-pressed="true">After gas</button>
+      <button type="button" data-kind="gross" aria-pressed="false">Before gas</button>
+    </div>
+    <div class="scroll"><table id="summary"><thead><tr><th>Order size</th><th>Orders</th><th>Ahead</th><th>Behind</th>
+      <th>Median</th><th>Size-weighted</th><th>Extra output, USD</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="sumNote"></p>
+
+    <h3 style="margin-top:28px">Run both, keep the better quote</h3>
+    <p class="note col">The extra output an aggregator gets by running Split Optimizer next to its own engine and keeping the better quote of the two for each order, after gas, as basis points of the whole volume.</p>
+    <div class="scroll" style="margin-top:10px"><table id="bob"><thead><tr><th>Order size</th><th>Orders</th><th>Split Optimizer better</th>
+      <th>Volume, USD</th><th>Extra output, USD</th><th>Gain</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="col">
+    <h2>How to use it</h2>
+    <div class="stack" style="margin-top:14px">
+      <p>Run Split Optimizer in parallel with your existing router and keep the better of the two quotes for each order. Its optimisation is heuristic, so on some orders it returns less than the aggregator (the “behind” column above). Running both means those orders lose nothing, and the gain is the best-of-both figure.</p>
+      <p>This is the first version. The heuristics will be tuned on more order data and improved in later versions, which should cut the orders where it falls behind.</p>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>How it was measured</h2>
+    <div class="stack" style="margin-top:14px">
+      <p><b>Orders.</b> 3,429 sell orders of real size and pair, each taken from an executed CoW Swap trade (linked per order below), from about $13k to $12 million (median $72k).</p>
+      <p><b>Same block.</b> On 18 Nov 2026 each order was sent to each aggregator's public quote API. Split Optimizer then quoted the same order on the exact on-chain state that aggregator priced, using a block-by-block recording of the market, so neither side saw later blocks.</p>
+      <p><b>Same liquidity.</b> Aggregators were asked to use only the on-chain venue types Split Optimizer covers (Uniswap V2/V3/V4, SushiSwap, PancakeSwap, Curve, Balancer V2/V3, Fluid, Ekubo, ERC-4626 vaults). RFQ and private market makers were excluded on both sides, so the comparison is about routing, not access to private liquidity.</p>
+      <p><b>Fees and gas.</b> Aggregator-side fees were added back so only routing is compared. “After gas” charges every route its own gas estimate at that block's base fee, priced in the output token; gas was cheap on this day, so both views are close.</p>
+      <p><b>Router.</b> Split Optimizer is a routing engine built on PropellerHeads' open-source Fynd and Tycho, with a proprietary optimisation algorithm that splits large orders across pools and paths and merges flows where routes meet. Median time per quote is about 120 ms (p90 about 150 ms), measured on a single 16-vCPU Google Cloud VM (c4d-highcpu-16).</p>
+      <p><b>First version.</b> This is the first version and it will keep improving: latency can be reduced further with more cores and tuning, and throughput can be raised as needed by running more instances, since each one is stateless.</p>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>Check it yourself</h2>
+    <p class="muted" style="margin-top:8px">No software needed for the first three steps.</p>
+    <ol class="steps" style="margin-top:14px">
+      <li><div><b>The orders are real.</b> Open any order below: its source trade links to Etherscan.</div></li>
+      <li><div><b>The routes are concrete.</b> Each order lists every pool Split Optimizer's route used, with the block it was priced on. Each pool links to its contract.</div></li>
+      <li><div><b>The data was fixed in advance.</b> The SHA-256 below covers every result file and each aggregator's raw API responses. It was published with the announcement, so the numbers cannot have been changed afterwards.</div></li>
+      <li><div><b>The aggregator quotes are authentic.</b> <span id="ridStep"></span></div></li>
+      <li><div><b>Test it live.</b> A test endpoint in the CoW Protocol solver format (<code>/solve</code>) is available on request, so any order or auction can be compared on current blocks.</div></li>
+    </ol>
+    <div class="stack" style="margin-top:18px">
+      <span class="eyebrow">Manifest SHA-256</span>
+      <div class="hash"><span class="mono" id="mhash"></span><button type="button" class="copy" data-copy="mhash">Copy</button></div>
+      <p class="note">The manifest lists the SHA-256 of results.csv, routes.jsonl.gz, blocks.json, summary.json and of each aggregator's raw responses. The files are published alongside this page<span id="repoNote"></span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Orders</h2>
+    <p class="note col" id="leftOut"></p>
+    <div class="controls">
+      <label class="muted" for="q">Search</label>
+      <input id="q" type="search" placeholder="Token, transaction or block">
+      <label class="muted" for="size">Size</label>
+      <select id="size"><option value="all">All sizes</option><option value="0-30">&lt; 30 ETH</option><option value="30-100">30–100 ETH</option>
+        <option value="100-300">100–300 ETH</option><option value="300-1e12">300+ ETH</option></select>
+      <label class="muted" for="sort">Sort</label>
+      <select id="sort"><option value="usd">Largest first</option><option value="best">Best for Split Optimizer</option><option value="worst">Worst for Split Optimizer</option><option value="block">Block</option></select>
+    </div>
+    <div class="scroll"><table id="orders"><thead><tr><th>Pair</th><th>Size</th><th>Block</th><th>Split Optimizer</th><th id="colAgg">Aggregator</th><th>Difference</th><th>Pools</th></tr></thead><tbody></tbody></table></div>
+    <div class="pager"><span id="count" class="muted"></span><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button></div>
+  </section>
+
+  <section class="col">
+    <h2>Limits</h2>
+    <div class="stack" style="margin-top:14px">
+      <p>These are quotes, not executed swaps. Split Optimizer's outputs come from exact simulation of each pool at the quoted block; the aggregators' are their own API quotes.</p>
+      <p>Left out of the totals and the order list: comparisons where the two quotes differ by 1,000 bps or more, orders under $1,000, and orders the router found no route for. Most of these are tokens the router does not yet cover well (Aave aTokens, USDY, PEPE, ENA and a few others), where the aggregator's quote is far better. Run in parallel, those orders keep the aggregator's quote and lose nothing. Every one is still in results.csv, which the manifest hash covers.</p>
+      <p id="cNote"></p>
+    </div>
+  </section>
+
+  <footer class="stack">
+    <span class="eyebrow">Contact</span>
+    <div class="contact">
+      <div><span>Name</span><b>Rohan Indurkar</b></div>
+      <div><span>Email</span><b>rohanindurkar92@gmail.com</b></div>
+      <div><span>Telegram</span><b>@mrr0b0t2004</b></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const fmt = (x, d = 2) => (x > 0 ? "+" : "") + x.toFixed(d);
+const cls = x => x > 0.05 ? "pos" : x < -0.05 ? "neg" : "";
+const usd = x => (x < 0 ? "−$" : "$") + Math.abs(Math.round(x)).toLocaleString("en-US");
+const amt = x => x >= 1000 ? x.toLocaleString("en-US", { maximumFractionDigits: 2 }) : x.toPrecision(6);
+const el = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const label = l => CONFIG.names[l] || "Aggregator " + l;
+let DATA, agg = CONFIG.focus, kind = "net", page = 0, rows = [];
+const PER = 50;
+
+function poolLink(protocol, pool) {
+  if (/^0x[0-9a-fA-F]{40}$/.test(pool)) return `<a href="https://etherscan.io/address/${pool}" target="_blank" rel="noopener">${esc(pool)}</a>`;
+  if (protocol.includes("uniswap_v4") && /^0x[0-9a-fA-F]{64}$/.test(pool))
+    return `<a href="https://app.uniswap.org/explore/pools/ethereum/${pool}" target="_blank" rel="noopener">${esc(pool.slice(0, 18))}…</a>`;
+  if (protocol.includes("balancer_v2") && /^0x[0-9a-fA-F]{64}$/.test(pool))
+    return `<a href="https://etherscan.io/address/${pool.slice(0, 42)}" target="_blank" rel="noopener">${esc(pool.slice(0, 42))}</a>`;
+  return esc(pool.length > 46 ? pool.slice(0, 22) + "…" : pool);
+}
+
+function renderSummary() {
+  const t = DATA.summary.tables[`${agg}_${kind}`] || [];
+  el("summary").querySelector("tbody").innerHTML = t.map(r => `<tr class="${r.size === "all" ? "total" : ""}">
+    <td>${r.size === "all" ? "All sizes" : esc(r.size)}</td><td>${r.orders.toLocaleString("en-US")}</td><td>${r.ahead.toLocaleString("en-US")}</td>
+    <td>${r.behind.toLocaleString("en-US")}</td><td class="${cls(r.median_bps)}">${fmt(r.median_bps)} bps</td>
+    <td class="${cls(r.size_weighted_bps)}">${fmt(r.size_weighted_bps)} bps</td><td class="${cls(r.net_usd)}">${usd(r.net_usd)}</td></tr>`).join("");
+  el("sumNote").textContent = CONFIG.scope[agg] || "";
+  const ex = (DATA.summary.excluded || {})[agg];
+  el("leftOut").textContent = ex ? `Not shown for ${label(agg)}: ${ex.router_far_behind} orders where the router was more than 1,000 bps behind (mostly tokens it does not yet cover well), ${ex.router_far_ahead} where it was more than 1,000 bps ahead, and ${DATA.summary.excluded.no_route} with no route. All are in results.csv.` : "";
+  el("bob").querySelector("tbody").innerHTML = (DATA.summary.tables[`${agg}_best_of_both`] || []).map(r => `<tr class="${r.size === "all" ? "total" : ""}">
+    <td>${r.size === "all" ? "All sizes" : esc(r.size)}</td><td>${r.orders.toLocaleString("en-US")}</td><td>${r.split_optimizer_better.toLocaleString("en-US")}</td>
+    <td>${usd(r.volume_usd)}</td><td class="pos">${usd(r.gain_usd)}</td><td class="pos">+${r.gain_bps.toFixed(2)} bps</td></tr>`).join("");
+  document.querySelectorAll("#aggTabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.agg === agg));
+  document.querySelectorAll("#gasTabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.kind === kind));
+  el("colAgg").textContent = label(agg);
+}
+
+function filterRows() {
+  const q = el("q").value.trim().toLowerCase();
+  const [lo, hi] = el("size").value === "all" ? [0, Infinity] : el("size").value.split("-").map(Number);
+  rows = DATA.orders.filter(o => o.a[agg] && o.eth >= lo && o.eth < hi &&
+    (!q || o.s.toLowerCase().includes(q) || o.t.toLowerCase().includes(q) || o.tx.includes(q) || String(o.b).includes(q)));
+  const key = el("sort").value, k = kind === "net" ? 4 : 3, d = o => (o.a[agg][k] ?? o.a[agg][3]);
+  rows.sort(key === "usd" ? (a, b) => b.usd - a.usd : key === "best" ? (a, b) => d(b) - d(a) : key === "worst" ? (a, b) => d(a) - d(b) : (a, b) => a.b - b.b);
+  page = 0;
+  renderOrders();
+}
+
+function detail(o) {
+  const quotes = Object.entries(o.a).map(([l, v]) => `<dt>${esc(label(l))}</dt><dd class="num">${amt(v[0])} ${esc(o.t)} · gas ${v[1].toLocaleString("en-US")}
+    · priced at block ${v[2] || "?"} · ${fmt(v[3])} bps before gas</dd>`).join("");
+  const rid = o.rid ? `<dt>Your request id</dt><dd class="mono">${esc(o.rid)}</dd>` : "";
+  const legs = o.legs.map(([p, pool]) => `<li>${esc(p.replace("vm:", ""))} · ${poolLink(p, pool)}</li>`).join("");
+  return `<tr class="detail"><td colspan="7"><div class="grid">
+    <div><h3>Order</h3><dl class="kv"><dt>Pair</dt><dd>${esc(o.s)} → ${esc(o.t)}</dd><dt>Size</dt><dd class="num">${o.eth.toLocaleString("en-US")} ETH · ${usd(o.usd)}</dd>
+      <dt>Source trade</dt><dd><a href="https://etherscan.io/tx/${o.tx}" target="_blank" rel="noopener" class="mono">${o.tx.slice(0, 18)}…</a></dd>
+      <dt>Priced on</dt><dd><a href="https://etherscan.io/block/${o.b}" target="_blank" rel="noopener">block ${o.b}</a></dd></dl></div>
+    <div><h3>Quotes</h3><dl class="kv"><dt>Split Optimizer</dt><dd class="num">${amt(o.f)} ${esc(o.t)} · gas ${o.fg.toLocaleString("en-US")}</dd>${quotes}${rid}</dl></div>
+    <div><h3>Split Optimizer route: ${o.legs.length} pool${o.legs.length === 1 ? "" : "s"}</h3><ol class="legs">${legs}</ol></div>
+  </div></td></tr>`;
+}
+
+function renderOrders() {
+  const start = page * PER, view = rows.slice(start, start + PER), k = kind === "net" ? 4 : 3;
+  el("orders").querySelector("tbody").innerHTML = view.map((o, i) => {
+    const v = o.a[agg], diff = v[k] ?? v[3];
+    return `<tr data-i="${start + i}" tabindex="0"><td>${esc(o.s)} → ${esc(o.t)}</td><td>${o.eth.toLocaleString("en-US", { maximumFractionDigits: 1 })} ETH</td>
+      <td>${o.b}</td><td>${amt(o.f)}</td><td>${amt(v[0])}</td><td class="${cls(diff)}">${fmt(diff)} bps</td><td>${o.legs.length}</td></tr>`;
+  }).join("") || `<tr><td colspan="7" class="muted">No orders match.</td></tr>`;
+  el("count").textContent = rows.length ? `${start + 1}–${Math.min(start + PER, rows.length)} of ${rows.length.toLocaleString("en-US")}` : "";
+  el("prev").disabled = page === 0;
+  el("next").disabled = start + PER >= rows.length;
+}
+
+function toggle(tr) {
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains("detail")) { next.remove(); tr.classList.remove("open"); return; }
+  tr.classList.add("open");
+  tr.insertAdjacentHTML("afterend", detail(rows[+tr.dataset.i]));
+}
+
+async function copyText(id, btn) {
+  const text = el(id).textContent;
+  try { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; }
+  catch { const r = document.createRange(); r.selectNodeContents(el(id)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected"; }
+}
+
+function init() {
+  const s = DATA.summary;
+  el("lede").innerHTML = CONFIG.lede;
+  el("facts").innerHTML = [["3,429", "orders"], [`${s.blocks[0].toLocaleString("en-US")}–${s.blocks[1].toLocaleString("en-US")}`, "blocks"],
+    ["3", "aggregators"], ["~120 ms", "median quote time, 16-vCPU VM"]].map(([b, t]) => `<div><b>${b}</b><span>${t}</span></div>`).join("");
+  el("aggTabs").innerHTML = CONFIG.order.map(l => `<button type="button" data-agg="${l}" aria-pressed="false">${esc(label(l))}</button>`).join("");
+  el("ridStep").innerHTML = CONFIG.ridStep;
+  el("repoNote").textContent = CONFIG.repo ? ` at ${CONFIG.repo}` : "";
+  el("cNote").textContent = CONFIG.scope.C;
+  el("aggTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { agg = b.dataset.agg; renderSummary(); filterRows(); } });
+  el("gasTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { kind = b.dataset.kind; renderSummary(); filterRows(); } });
+  ["q", "size", "sort"].forEach(id => el(id).addEventListener(id === "q" ? "input" : "change", filterRows));
+  el("prev").addEventListener("click", () => { page--; renderOrders(); });
+  el("next").addEventListener("click", () => { page++; renderOrders(); });
+  el("orders").addEventListener("click", e => { const tr = e.target.closest("tbody tr[data-i]"); if (tr) toggle(tr); });
+  el("orders").addEventListener("keydown", e => { const tr = e.target.closest("tbody tr[data-i]"); if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(tr); } });
+  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.copy, b)));
+  el("mhash").textContent = CONFIG.manifestHash;
+  renderSummary();
+  filterRows();
+}
+
+fetch("data.json").then(r => r.json()).then(d => { DATA = d; init(); })
+  .catch(() => { el("lede").textContent = "The order data could not be loaded. Reload the page to try again."; });
+</script>
+
+</html>

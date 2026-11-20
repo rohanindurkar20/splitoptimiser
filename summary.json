@@ -1,0 +1,407 @@
+{
+ "eth_usd": 1807.16,
+ "orders": 3429,
+ "blocks": [
+  26441315,
+  26441797
+ ],
+ "tables": {
+  "A_gross": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1281,
+    "ahead": 857,
+    "behind": 92,
+    "median_bps": 0.203,
+    "size_weighted_bps": 2.863,
+    "net_usd": 12835
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1168,
+    "ahead": 752,
+    "behind": 34,
+    "median_bps": 0.173,
+    "size_weighted_bps": 3.157,
+    "net_usd": 35606
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 598,
+    "ahead": 385,
+    "behind": 8,
+    "median_bps": 0.47,
+    "size_weighted_bps": 4.959,
+    "net_usd": 91479
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "ahead": 161,
+    "behind": 9,
+    "median_bps": 0.333,
+    "size_weighted_bps": 5.355,
+    "net_usd": 253348
+   },
+   {
+    "size": "all",
+    "orders": 3303,
+    "ahead": 2155,
+    "behind": 143,
+    "median_bps": 0.212,
+    "size_weighted_bps": 4.824,
+    "net_usd": 393269
+   }
+  ],
+  "A_net": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1281,
+    "ahead": 793,
+    "behind": 107,
+    "median_bps": 0.154,
+    "size_weighted_bps": 2.817,
+    "net_usd": 12630
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1168,
+    "ahead": 737,
+    "behind": 43,
+    "median_bps": 0.149,
+    "size_weighted_bps": 3.137,
+    "net_usd": 35377
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 598,
+    "ahead": 384,
+    "behind": 10,
+    "median_bps": 0.461,
+    "size_weighted_bps": 4.949,
+    "net_usd": 91302
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "ahead": 161,
+    "behind": 9,
+    "median_bps": 0.332,
+    "size_weighted_bps": 5.353,
+    "net_usd": 253251
+   },
+   {
+    "size": "all",
+    "orders": 3303,
+    "ahead": 2075,
+    "behind": 169,
+    "median_bps": 0.183,
+    "size_weighted_bps": 4.816,
+    "net_usd": 392560
+   }
+  ],
+  "B_gross": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1263,
+    "ahead": 712,
+    "behind": 151,
+    "median_bps": 0.097,
+    "size_weighted_bps": 0.445,
+    "net_usd": 1962
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1172,
+    "ahead": 597,
+    "behind": 77,
+    "median_bps": 0.058,
+    "size_weighted_bps": -0.067,
+    "net_usd": -756
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 597,
+    "ahead": 317,
+    "behind": 26,
+    "median_bps": 0.098,
+    "size_weighted_bps": 1.507,
+    "net_usd": 27758
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 257,
+    "ahead": 120,
+    "behind": 18,
+    "median_bps": 0.04,
+    "size_weighted_bps": 1.159,
+    "net_usd": 55082
+   },
+   {
+    "size": "all",
+    "orders": 3289,
+    "ahead": 1746,
+    "behind": 272,
+    "median_bps": 0.075,
+    "size_weighted_bps": 1.03,
+    "net_usd": 84047
+   }
+  ],
+  "B_net": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1263,
+    "ahead": 788,
+    "behind": 132,
+    "median_bps": 0.108,
+    "size_weighted_bps": 0.456,
+    "net_usd": 2014
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1172,
+    "ahead": 610,
+    "behind": 73,
+    "median_bps": 0.061,
+    "size_weighted_bps": -0.065,
+    "net_usd": -735
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 597,
+    "ahead": 320,
+    "behind": 26,
+    "median_bps": 0.096,
+    "size_weighted_bps": 1.506,
+    "net_usd": 27730
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 257,
+    "ahead": 120,
+    "behind": 18,
+    "median_bps": 0.041,
+    "size_weighted_bps": 1.159,
+    "net_usd": 55052
+   },
+   {
+    "size": "all",
+    "orders": 3289,
+    "ahead": 1838,
+    "behind": 249,
+    "median_bps": 0.085,
+    "size_weighted_bps": 1.03,
+    "net_usd": 84060
+   }
+  ],
+  "C_gross": [
+   {
+    "size": "30-100 ETH",
+    "orders": 3,
+    "ahead": 0,
+    "behind": 3,
+    "median_bps": -0.254,
+    "size_weighted_bps": -0.291,
+    "net_usd": -15
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 397,
+    "ahead": 35,
+    "behind": 186,
+    "median_bps": -0.042,
+    "size_weighted_bps": 0.464,
+    "net_usd": 6541
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "ahead": 11,
+    "behind": 200,
+    "median_bps": -0.147,
+    "size_weighted_bps": 0.159,
+    "net_usd": 7539
+   },
+   {
+    "size": "all",
+    "orders": 656,
+    "ahead": 46,
+    "behind": 389,
+    "median_bps": -0.092,
+    "size_weighted_bps": 0.228,
+    "net_usd": 14065
+   }
+  ],
+  "C_net": [
+   {
+    "size": "30-100 ETH",
+    "orders": 3,
+    "ahead": 0,
+    "behind": 3,
+    "median_bps": -0.284,
+    "size_weighted_bps": -0.32,
+    "net_usd": -16
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 397,
+    "ahead": 30,
+    "behind": 191,
+    "median_bps": -0.045,
+    "size_weighted_bps": 0.459,
+    "net_usd": 6470
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "ahead": 11,
+    "behind": 201,
+    "median_bps": -0.147,
+    "size_weighted_bps": 0.158,
+    "net_usd": 7478
+   },
+   {
+    "size": "all",
+    "orders": 656,
+    "ahead": 41,
+    "behind": 395,
+    "median_bps": -0.096,
+    "size_weighted_bps": 0.226,
+    "net_usd": 13932
+   }
+  ],
+  "A_best_of_both": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1281,
+    "split_optimizer_better": 973,
+    "volume_usd": 44833483,
+    "gain_usd": 13616,
+    "gain_bps": 3.037
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1168,
+    "split_optimizer_better": 846,
+    "volume_usd": 112768775,
+    "gain_usd": 37205,
+    "gain_bps": 3.299
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 598,
+    "split_optimizer_better": 436,
+    "volume_usd": 184478008,
+    "gain_usd": 116479,
+    "gain_bps": 6.314
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "split_optimizer_better": 218,
+    "volume_usd": 473072592,
+    "gain_usd": 265547,
+    "gain_bps": 5.613
+   },
+   {
+    "size": "all",
+    "orders": 3303,
+    "split_optimizer_better": 2473,
+    "volume_usd": 815152858,
+    "gain_usd": 432848,
+    "gain_bps": 5.31
+   }
+  ],
+  "B_best_of_both": [
+   {
+    "size": "< 30 ETH",
+    "orders": 1263,
+    "split_optimizer_better": 1103,
+    "volume_usd": 44131521,
+    "gain_usd": 10318,
+    "gain_bps": 2.338
+   },
+   {
+    "size": "30-100 ETH",
+    "orders": 1172,
+    "split_optimizer_better": 1073,
+    "volume_usd": 112965407,
+    "gain_usd": 13082,
+    "gain_bps": 1.158
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 597,
+    "split_optimizer_better": 556,
+    "volume_usd": 184151117,
+    "gain_usd": 55183,
+    "gain_bps": 2.997
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 257,
+    "split_optimizer_better": 229,
+    "volume_usd": 475090332,
+    "gain_usd": 71312,
+    "gain_bps": 1.501
+   },
+   {
+    "size": "all",
+    "orders": 3289,
+    "split_optimizer_better": 2961,
+    "volume_usd": 816338377,
+    "gain_usd": 149895,
+    "gain_bps": 1.836
+   }
+  ],
+  "C_best_of_both": [
+   {
+    "size": "30-100 ETH",
+    "orders": 3,
+    "split_optimizer_better": 0,
+    "volume_usd": 502903,
+    "gain_usd": 0,
+    "gain_bps": 0.0
+   },
+   {
+    "size": "100-300 ETH",
+    "orders": 397,
+    "split_optimizer_better": 53,
+    "volume_usd": 141017856,
+    "gain_usd": 37981,
+    "gain_bps": 2.693
+   },
+   {
+    "size": "300+ ETH",
+    "orders": 256,
+    "split_optimizer_better": 17,
+    "volume_usd": 474430852,
+    "gain_usd": 28876,
+    "gain_bps": 0.609
+   },
+   {
+    "size": "all",
+    "orders": 656,
+    "split_optimizer_better": 70,
+    "volume_usd": 615951611,
+    "gain_usd": 66857,
+    "gain_bps": 1.085
+   }
+  ]
+ },
+ "excluded": {
+  "no_route": 4,
+  "A": {
+   "router_far_behind": 38,
+   "router_far_ahead": 0
+  },
+  "B": {
+   "router_far_behind": 93,
+   "router_far_ahead": 43
+  },
+  "C": {
+   "router_far_behind": 6,
+   "router_far_ahead": 2
+  }
+ }
+}
